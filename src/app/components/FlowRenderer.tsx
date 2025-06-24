@@ -1,14 +1,14 @@
 import { useSubscription } from '@apollo/client';
 import { UpdateIcon } from '@radix-ui/react-icons';
-import { ControlButton, Controls, ReactFlow as Flow, SelectionMode, useEdgesState, useNodesState } from '@xyflow/react';
+import { ControlButton, Controls, Edge, ReactFlow as Flow, Node, SelectionMode, useEdgesState, useNodesState } from '@xyflow/react';
 import { useCallback, useEffect, useState } from 'react';
-import '@xyflow/react/dist/base.css';
 
-import { DeviceNode } from './DeviceNode';
-import { KeyValueFilterNode } from './KeyValueFilterNode';
-import { LoggerFilterNode } from './LoggerFilterNode';
-import { LogsNode } from './LogsNode';
-import { TurboEdge } from './TurboEdge';
+import { DeviceNode } from './flow/DeviceNode';
+import { KeyValueFilterNode } from './flow/KeyValueFilterNode';
+import { LoggerFilterNode } from './flow/LoggerFilterNode';
+import { LogsNode } from './flow/LogsNode';
+import { TurboEdge } from './flow/TurboEdge';
+import { DeviceNodeType, DynamicFilterType, MessageNode, MessageNodeFilterType, MessagesNodeDataType, RawLogDataType } from './flow/types';
 
 import { MESSAGE_RECEIVED } from '../graphql/subscriptions';
 
@@ -21,7 +21,7 @@ const nodeTypes = {
   keyValueFilter: KeyValueFilterNode
 };
 
-const dynamicFilters = [
+const dynamicFilters: DynamicFilterType[] = [
   { key: 'userId', label: 'Exclude users', type: 'loggerFilter' },
   { key: 'sessionId', label: 'Exclude sessions', type: 'loggerFilter' },
   { key: 'name', label: 'Exclude logs', type: 'loggerFilter' }
@@ -37,10 +37,10 @@ const defaultEdgeOptions = {
 };
 
 const FlowRenderer = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const [edgesForNodeId, setEdgesForNodeId] = useState(null);
-  const [devices, setDevices] = useState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const [edgesForNodeId, setEdgesForNodeId] = useState<string>(null);
+  const [devices, setDevices] = useState<string[]>([]);
 
   const { data, loading, error, restart } = useSubscription(MESSAGE_RECEIVED);
 
@@ -59,31 +59,31 @@ const FlowRenderer = () => {
     if (data && data.messageReceived && data.messageReceived) {
       const { message } = data.messageReceived;
       const parsedResponse = JSON.parse(data.messageReceived.device);
-      console.info(parsedResponse);
 
       const { deviceId, deviceName, osVersion } = parsedResponse;
 
       const deviceNodeId = `device-${deviceId}`;
       const messagesNodeId = `messages-${deviceId}`;
 
-      const getNodes = (nodes) => {
+      const getNodes = (nodes:Node[]) => {
         const existingDeviceNode = nodes.find(node => node.id === deviceNodeId);
         if (existingDeviceNode) {
           const existingMessagesNodeIndex = nodes.findIndex(node => node.id === messagesNodeId);
           const existingMessagesNode = nodes[existingMessagesNodeIndex];
+          const messagesNodeDataObject: MessagesNodeDataType = {
+            rawLogs: [
+              ...((existingMessagesNode.data.rawLogs as RawLogDataType[] || [])),
+              {
+                timestamp: new Date().toISOString(),
+                message,
+                ...parsedResponse
+              }
+            ],
+            filters: [...existingMessagesNode?.data?.filters as MessageNodeFilterType[] || []]
+          };
           const newExistingMessageNode = {
             ...existingMessagesNode,
-            data: {
-              rawLogs: [
-                ...existingMessagesNode.data.rawLogs,
-                {
-                  timestamp: new Date().toISOString(),
-                  message,
-                  ...parsedResponse
-                }
-              ],
-              filters: [...existingMessagesNode?.data?.filters || []]
-            }
+            data: messagesNodeDataObject
           };
           const nnodes = [
             ...nodes.slice(0, existingMessagesNodeIndex),
@@ -97,9 +97,10 @@ const FlowRenderer = () => {
             const existingFilterNodeIndex = nnodes.findIndex(node => node.id === filterNodeId);
             const existingFilterNode = nnodes[existingFilterNodeIndex];
 
-            const addedFilters = existingFilterNode.data.filters.findIndex(f => f === parsedResponse[filter.key]) > -1
-              ? [...existingFilterNode.data.filters]
-              : [...existingFilterNode.data.filters, parsedResponse[filter.key]];
+            const filtersArray = (existingFilterNode?.data?.filters as DynamicFilterType[] || []);
+            const addedFilters = filtersArray.findIndex((f: DynamicFilterType) => f === parsedResponse[filter.key]) > -1
+              ? [...filtersArray]
+              : [...filtersArray, parsedResponse[filter.key]];
             const newExistingFilterNode = {
               ...existingFilterNode,
               data: {
@@ -116,16 +117,16 @@ const FlowRenderer = () => {
           const numberOfDevices = devices.length;
           const devicesGap = 550;
           setEdgesForNodeId(deviceId);
-          const deviceNode = {
+          const deviceNode:DeviceNodeType = {
             id: deviceNodeId,
             type: 'device',
             position: { x: numberOfDevices * devicesGap + 350, y: 200 },
             data: { label: `${deviceName.split(' - ')[0]} (${osVersion})` }
           };
-          const messageNode = {
+          const messageNode: MessageNode = {
             id: messagesNodeId,
             type: 'logs',
-            position: { x: numberOfDevices * devicesGap + 10, y: 400 },
+            position: { x: numberOfDevices * devicesGap + 30, y: 400 },
             data: {
               rawLogs: [{
                 timestamp: new Date().toISOString(),
@@ -134,7 +135,7 @@ const FlowRenderer = () => {
               }],
               filters: dynamicFilters.map(filter => ({
                 key: filter.key,
-                values: []
+                values: [] as string[]
               }))
             }
           };
@@ -143,7 +144,7 @@ const FlowRenderer = () => {
             return {
               id: `filter-${deviceId}-${filter.key}`,
               type: filter.type,
-              position: { x: numberOfDevices * devicesGap + 100 + (-20 * index), y: 20 * (index + 1) },
+              position: { x: numberOfDevices * devicesGap + 100 + (-20 * index), y: 50 + 20 * (index + 1) },
               data: {
                 deviceId,
                 label: filter.label,
@@ -169,7 +170,7 @@ const FlowRenderer = () => {
   useEffect(() => {
     if (!edgesForNodeId) return;
 
-    const getEdges = (edges) => {
+    const getEdges = (edges:Edge[]) => {
       const device2messagesEdge = `edge-device-to-message-${edgesForNodeId}`;
       const deviceNodeId = `device-${edgesForNodeId}`;
       const messagesNodeId = `messages-${edgesForNodeId}`;
@@ -241,7 +242,6 @@ const FlowRenderer = () => {
         zoomOnScroll={false}
         zoomOnPinch={false}
         panOnScroll
-                // fitView
         selectionOnDrag
         panOnDrag={panOnDrag}
         selectionMode={SelectionMode.Partial}

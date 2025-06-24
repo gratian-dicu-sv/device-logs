@@ -1,4 +1,4 @@
-import { getBezierPath } from '@xyflow/react';
+import { EdgeProps, getBezierPath } from '@xyflow/react';
 
 export function TurboEdge ({
   id,
@@ -11,7 +11,7 @@ export function TurboEdge ({
   style = {},
   markerEnd,
   markerStart
-}) {
+}: EdgeProps) {
   const xEqual = sourceX === targetX;
   const yEqual = sourceY === targetY;
 

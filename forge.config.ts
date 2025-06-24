@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { resolve, join, dirname } from 'path';
 
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
 import { MakerDeb } from '@electron-forge/maker-deb';
@@ -8,6 +9,7 @@ import { MakerZIP } from '@electron-forge/maker-zip';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 import type { ForgeConfig } from '@electron-forge/shared-types';
+import { copy, mkdirs } from 'fs-extra';
 
 import { author, productName } from './package.json';
 
@@ -25,6 +27,31 @@ const config: ForgeConfig = {
     icon: path.resolve(rootDir, 'assets/icons/icon')
   },
   rebuildConfig: {},
+  hooks: {
+    // The call to this hook is mandatory for better-sqlite3 to work once the app built
+    async packageAfterCopy (_forgeConfig, buildPath) {
+      const requiredNativePackages = ['electron-squirrel-startup', 'electron-window-state', 'jsonfile', 'mkdirp'];
+
+      // __dirname isn't accessible from here
+      const dirnamePath: string = '.';
+      const sourceNodeModulesPath = resolve(dirnamePath, 'node_modules');
+      const destNodeModulesPath = resolve(buildPath, 'node_modules');
+
+      // Copy all asked packages in /node_modules directory inside the asar archive
+      await Promise.all(
+        requiredNativePackages.map(async (packageName) => {
+          const sourcePath = join(sourceNodeModulesPath, packageName);
+          const destPath = join(destNodeModulesPath, packageName);
+
+          await mkdirs(dirname(destPath));
+          await copy(sourcePath, destPath, {
+            recursive: true,
+            preserveTimestamps: true
+          });
+        })
+      );
+    }
+  },
   makers: [
     new MakerSquirrel({ name: productName }),
     new MakerZIP({}, ['darwin']),

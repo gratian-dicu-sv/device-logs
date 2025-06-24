@@ -31,10 +31,10 @@ export default defineConfig((env) => {
       svgrPlugin(),
       viteTsconfigPaths(),
       checker({
-        // typescript: true
-        // eslint: {
-        //   lintCommand: 'eslint'
-        // }
+        // typescript: true,
+        eslint: {
+          lintCommand: 'eslint'
+        }
       }),
       tailwindcss()
     ],

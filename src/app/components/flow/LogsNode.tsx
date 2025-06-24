@@ -1,13 +1,15 @@
 import { Handle, Position } from '@xyflow/react';
 
-const formatLogEntry = (message, logger, timestamp) => {
+import { MessagesNodeDataType } from './types';
+
+const formatLogEntry = (message:string, logger:string, timestamp:string) => {
   return `<span className='timestamp'>${new Date(timestamp).toLocaleTimeString('en-US')}</span> | <span className='loggerName'>${logger}</span> | ${message}`;
 };
-const getIntersection = (array1, array2) => {
+const getIntersection = (array1:string[], array2:string[]) => {
   return array1.filter(value => array2.includes(value));
 };
 
-export function LogsNode ({ data }) {
+export function LogsNode ({ data }: { data: MessagesNodeDataType }) {
   const filters = data.filters || [];
   const copiedRawLogs = [...data.rawLogs || []].filter(log => {
     if (filters.length === 0) return true; // No filters, show all logs

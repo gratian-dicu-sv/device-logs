@@ -1,9 +1,14 @@
+import device from '@/app/assets/android.svg';
+
 import { Handle, Position } from '@xyflow/react';
 
-import device from '../assets/android.svg';
+import { DeviceNodeDataType } from './types';
 
-export function DeviceNode ({ data }) {
-  console.warn(data);
+type DeviceNodeDataProp = {
+  data: DeviceNodeDataType
+};
+
+export function DeviceNode ({ data }: DeviceNodeDataProp) {
   return (
     <>
       <div className='device' style={{ alignContent: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>

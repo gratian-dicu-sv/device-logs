@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "@xyflow/react/dist/base.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -171,6 +172,9 @@
 }
 
 @layer components {
+  .app-header {
+    @apply absolute w-full z-1;
+  }
   .flowContainer {
     @apply w-full h-full;
   }
@@ -303,7 +307,6 @@
     overflow-y: scroll;
   }
 
-
   .react-flow__handle {
     opacity: 0;
   }
@@ -313,12 +316,8 @@
   }
 
   .react-flow__edge .react-flow__edge-path {
-    stroke: url(#edge-gradient);
-    stroke-width: 1;
-  }
-
-  .react-flow__panel.react-flow__controls.vertical.bottom {
-    margin-bottom: 50px !important;
+    stroke: url(#edge-gradient) !important;
+    stroke-width: 2 !important;
   }
 
   .react-flow__controls button {
@@ -335,6 +334,10 @@
 
   .react-flow__controls button:last-child {
     @apply rounded-b-lg;
+  }
+
+  div.react-flow__attribution.bottom.right {
+    @apply bg-slate-900;
   }
 
   html.dark img.deviceImage {
