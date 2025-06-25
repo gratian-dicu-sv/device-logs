@@ -3,10 +3,10 @@ import { emitEvent } from '@/webContents';
 
 const MenuItems: Electron.MenuItemConstructorOptions[] = [
   {
-    label: 'Reactronite',
+    label: 'Ohana Device Logs Viewer',
     submenu: [
       {
-        label: 'About Reactronite'
+        label: 'About'
       },
       {
         type: 'separator'

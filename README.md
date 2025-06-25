@@ -5,7 +5,6 @@
 Make sure you have the following installed:
 
 - **Node.js** (LTS or higher)
-- **pnpm** (v10 or higher) - This project uses pnpm as the package manager
 
 ### Installation
 
@@ -14,13 +13,13 @@ Make sure you have the following installed:
 2. **Install dependencies**
 
    ```bash
-   pnpm install
+   npm i
    ```
 
 3. **Start development**
 
    ```bash
-   pnpm dev
+   npm run dev
    ```
 
 That's it! Your application will launch in development mode with hot reloading enabled.
@@ -29,27 +28,10 @@ That's it! Your application will launch in development mode with hot reloading e
 
 | Command | Description |
 |---------|-------------|
-| `pnpm dev` | Start the app in development mode with hot reloading |
-| `pnpm package` | Package the app for the current platform |
-| `pnpm make` | Create distributable packages for the current platform |
-| `pnpm publish` | Publish the app (configure publishers in forge.config.ts) |
-
-## 📁 Project Structure
-
-```txt
-├── src/
-│   ├── main.ts              # Main Electron process
-│   ├── preload.ts           # Preload script for secure IPC
-│   ├── app/                  # React application
-│   │   ├── App.tsx          # Main app component
-│   │   ├── components/      # Reusable UI components
-│   │   ├── screens/         # Application screens/pages
-│   ├── menu/                # Application menu configuration
-│   ├── ipc/                 # IPC handlers and channels
-│   └── @types/              # TypeScript declarations
-├── config/                  # Vite configuration files
-├── assets/                  # Static assets (icons, fonts, images)
-```
+| `npm run dev` | Start the app in development mode with hot reloading |
+| `npm run package` | Package the app for the current platform |
+| `npm run make` | Create distributable packages for the current platform |
+| `npm run publish` | Publish the app (configure publishers in forge.config.ts) |
 
 ## 🔧 Configuration
 
@@ -73,3 +55,5 @@ The boilerplate is designed to be easily extensible:
 ## 📄 License
 
 This project is licensed under the [MIT License](./LICENSE) - feel free to use it for your own projects!
+
+This project uses [Reactronite](https://github.com/flaviodelgrosso/reactronite) template, so a special thanks to [Flavio Del Grosso](https://github.com/flaviodelgrosso)!
