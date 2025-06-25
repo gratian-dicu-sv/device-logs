@@ -11,8 +11,8 @@ type DeviceNodeDataProp = {
 export function DeviceNode ({ data }: DeviceNodeDataProp) {
   return (
     <>
-      <div className='device' style={{ alignContent: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
-        <img className='deviceImage' src={device} alt='device' style={{ width: 50 }} />
+      <div className='device max-w-20'>
+        <img className='deviceImage text-center w-10' src={device} alt='device' />
         <label htmlFor='text'>{data?.label?.split(' - ')[0]}</label>
       </div>
       <Handle type='source' position={Position.Bottom} id='a' />

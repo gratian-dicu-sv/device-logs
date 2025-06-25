@@ -12,10 +12,25 @@ jobs:
   create-release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: taiki-e/create-gh-release-action@v1
+      - name: checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pre-reqs
+        shell: bash
+        run: |
+          npm ci
+      
+      - name: Build the output for MacOS
+        shell: bash
+        run: |
+          npm run make
+
+      - name: Create release
+        uses: ncipollo/release-action@v1
         with:
-          # (optional) Path to changelog.
-          # changelog: CHANGELOG.md
-          # (required) GitHub token for creating GitHub Releases.
+          name: OhanaDeviceLogsViewer-build.${{ github.run_number }}
+          tag: "build.${{ github.run_number }}"
+          artifacts: "out/*.zip"
+          draft: true
+          commit: ${{ github.ref }}
           token: ${{ secrets.GITHUB_TOKEN }}

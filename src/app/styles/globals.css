@@ -265,8 +265,23 @@
 
   .react-flow {}
 
+  .timestamp {
+    @apply font-bold text-xs text-primary;
+  }
+
+  .loggerName {
+    @apply font-bold text-accent-foreground;
+  }
+
+  .log {
+    @apply font-extralight text-xs;    
+  }
+  .react-flow__node-device .device{
+    @apply flex flex-col items-center;
+  }
+
   .react-flow__node-device label {
-    @apply text-accent-foreground text-lg
+    @apply text-accent-foreground text-xs text-center;
   }
 
   .react-flow__node-loggerFilter {
@@ -274,7 +289,7 @@
   }
 
   .react-flow__node-loggerFilter .body {
-    @apply m-2
+    @apply m-2;
   }
 
   .react-flow__node-loggerFilter .filterHeader {

@@ -26,9 +26,9 @@ export default defineConfig((env) => {
       viteTsconfigPaths(),
       checker({
         // typescript: true,
-        eslint: {
-          lintCommand: 'eslint'
-        }
+        // eslint: {
+        //   lintCommand: 'eslint'
+        // }
       })
     ],
     define,
