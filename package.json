@@ -1,7 +1,7 @@
 {
   "name": "logs-viewer",
   "productName": "Logs Viewer",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Ohana logs viewer with",
   "main": ".vite/build/main.js",
   "license": "MIT",
@@ -32,7 +32,7 @@
     "major": "npm run release -- --release-as major",
     "minor": "npm run release -- --release-as minor",
     "patch": "npm run release -- --release-as patch",
-    "push-release": "git push --follow-tags origin master"
+    "push-release": "git push --follow-tags origin main"
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",
